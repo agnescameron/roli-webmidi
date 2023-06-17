@@ -1,5 +1,17 @@
 // Enable WEBMIDI.js and trigger the onEnabled() function when ready
+var elem = document.body;
+var two = new Two(params).appendTo(elem);
 
+const pitchLower = 48;
+const pitchUpper = 96;
+
+const pitchRange = pitchUpper - pitchLower;
+
+const width = two.width;
+const height = two.height;
+
+let x =  0;
+let y = 0;
 
 WebMidi
   .enable()
@@ -12,16 +24,11 @@ var params = {
 };
 
 
-var elem = document.body;
-var two = new Two(params).appendTo(elem);
-
-
 function drawLine(data) {
-  console.log(data)
+  // console.log(data)
+  x = x + (62 - data[1])/10
 
-  var radius = data[1];
-  var x = two.width * 0.5;
-  var y = two.height * 0.5 - radius * 1.25;
+  var radius = 10;
   var circle = two.makeCircle(x, y, radius);
 
   // The object returned has many stylable properties:
@@ -71,11 +78,15 @@ function onEnabled() {
   // });
 
 
-  roli.addListener("onnote", e => {
+  roli.addListener("noteon", e => {
     // console.log(e.rawData)
     // 0 is status, 1 is data 1, 2 is data 2
     // console.log(dec2bin(e.rawData[0]))
-    drawLine(e.rawData)
+    // drawLine(e.rawData)
+    console.log(e.rawData)
+
+    x = (e.rawData[1] - pitchLower)/pitchRange * width
+    y = e.rawData[2]/125 * height
   })
 
     roli.addListener("pitchbend", e => {
